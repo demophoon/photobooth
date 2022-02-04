@@ -23,6 +23,16 @@ type UploadData struct {
 	Questions     string    `json:"questions"`
 	PhotoPath     string    `json:"photo_path"`
 	SubmittedAt   time.Time `json:"submitted_at"`
+	IPAddress     string    `json:"ip"`
+	UserAgent     string    `json:"ua"`
+}
+
+func getIpAddress(r *http.Request) string {
+	address := r.Header.Get("X-Forwarded-For")
+	if address != "" {
+		return address
+	}
+	return r.RemoteAddr
 }
 
 func savePhoto(id string, r *http.Request, field string) (string, error) {
@@ -79,6 +89,8 @@ func uploadPhoto(w http.ResponseWriter, r *http.Request) {
 		PhotoPath:     photoPath,
 		SignaturePath: signaturePath,
 		SubmittedAt:   time.Now(),
+		IPAddress:     getIpAddress(r),
+		UserAgent:     r.Header.Get("User-Agent"),
 	}
 
 	os.MkdirAll("forms/", os.ModePerm)

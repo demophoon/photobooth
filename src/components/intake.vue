@@ -25,7 +25,7 @@
                                 <div class="control">
                                     <input type="text" class="input" v-model="fullName" />
                                 </div>
-                                <p v-if="validateCompleted(fullName)" class="help is-danger">
+                                <p v-if="submitAttempted && !validateCompleted(fullName)" class="help is-danger">
                                     This field is required
                                 </p>
                             </div>
@@ -35,7 +35,7 @@
                                 <div class="control">
                                     <input type="text" class="input" v-model="email" />
                                 </div>
-                                <p v-if="validateCompleted(email)" class="help is-danger">
+                                <p v-if="submitAttempted && !validateEmail(email)" class="help is-danger">
                                     This field is required
                                 </p>
                             </div>
@@ -80,6 +80,9 @@
                                         w="600px" h="150px"
                                     />
                                 </div>
+                                <p class="help">
+                                    Use your mouse or finger to draw your signature.
+                                </p>
                                 <p v-if="submitAttempted && !signed" class="help is-danger">
                                     This field is required
                                 </p>
@@ -140,13 +143,19 @@ export default {
         isValidSignature() {
             return !this.$refs.signature.isEmpty()
         },
+        validateEmail(field) {
+            return this.validateCompleted(field) && field.includes("@") && field.includes(".") && !field.endsWith(".")
+        },
         validateCompleted(field) {
-            return this.submitAttempted && field == ""
+            return field != ""
+        },
+        validateForm() {
+            return !(this.fullName == "" || this.email == "" || !this.isValidSignature())
         },
         upload() {
             let self = this;
             this.submitAttempted = true
-            if (!this.isValidSignature()) {
+            if (!this.validateForm()) {
                 return
             }
 

@@ -1,5 +1,7 @@
 <template>
 <div>
+    <div class="loading"></div>
+
     <div class="container py-3">
         <div class="columns is-centered">
             <div v-show="img" class="column is-half">
@@ -23,12 +25,25 @@
             <div class="column is-half has-text-centered">
 
                 <span v-show="img">
-                    <button class="button is-primary" @click="showIntakeForm">Share with PyCascades</button>
-                    <button class="button is-danger" @click="reset">Snap Another</button>
+                    <div class="content">
+                        <p>
+                            <button class="button is-info" @click="showIntakeForm">Share with PyCascades</button>
+                            <button class="button is-danger" @click="reset">Snap Another</button>
+                        </p>
+                        <p>
+                            If you decide to share your photo with PyCascades you
+                            will allow us to add your photo to a collage that we put
+                            together every year to show off our amazing community.
+                        </p>
+                        <p>
+                            You may share this photo with your community regardless
+                            of your choice to share or not share with PyCascades.
+                        </p>
+                    </div>
                 </span>
 
                 <span v-show="!img">
-                    <button class="button" @click="onCapture">Capture</button>
+                    <button class="button" v-bind:class="{ 'is-loading': !captureEnable }" @click="onCapture">Capture</button>
 
                     <div class="select">
                         <select v-model="camera">
@@ -71,6 +86,8 @@ export default {
             devices: [],
             deviceMap: {},
             intakeFormVisible: false,
+            captureEnable: true,
+            frames: [],
         };
     },
     computed: {
@@ -103,15 +120,23 @@ export default {
         },
         onCapture() {
             let self = this
+            self.captureEnable = false
             let img = this.$refs.webcam.capture();
 
             var readyImage = function(src) {
                 return new Promise((resolve, reject) => {
                     ImageJS.load(src).then((localImg) => {
-                        localImg = localImg.resize({
-                            height: imageSize,
-                            preserveAspectRatio: true,
-                        })
+                        if (localImg.height > localImg.width) {
+                            localImg = localImg.resize({
+                                width: imageSize,
+                                preserveAspectRatio: true,
+                            })
+                        } else {
+                            localImg = localImg.resize({
+                                height: imageSize,
+                                preserveAspectRatio: true,
+                            })
+                        }
                         let result = new Image()
                         result.onload = function() {
                             resolve(result)
@@ -134,8 +159,10 @@ export default {
                 for (let i in images) {
                     let img = images[i]
                     let centered_x = (Math.max(imageSize, img.width) - imageSize) / -2
-                    ctx.drawImage(img, centered_x, 0)
+                    let centered_y = (Math.max(imageSize, img.height) - imageSize) / -2
+                    ctx.drawImage(img, centered_x, centered_y)
                     self.img = canvas.toDataURL()
+                    self.captureEnable = true
                 }
             })
         },

@@ -105,5 +105,5 @@ func main() {
 
 	mux.HandleFunc(pat.Post("/api/upload"), uploadPhoto)
 
-	http.ListenAndServe("localhost:8000", mux)
+	http.ListenAndServe(":8000", mux)
 }

@@ -28,10 +28,6 @@ type UploadData struct {
 }
 
 func getIpAddress(r *http.Request) string {
-	address := r.Header.Get("X-Forwarded-For")
-	if address != "" {
-		return address
-	}
 	return r.RemoteAddr
 }
 

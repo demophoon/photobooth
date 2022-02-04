@@ -76,9 +76,9 @@
                             <div class="field">
                                 <label class="label">Signature</label>
                                 <div class="control">
-                                    <signature ref="signature" class='bordered'
-                                        w="600px" h="150px"
-                                    />
+                                    <div class="signature-bordered">
+                                        <signature ref="signature" w="600px" h="150px" />
+                                    </div>
                                 </div>
                                 <p class="help">
                                     Use your mouse or finger to draw your signature.
@@ -188,7 +188,7 @@ export default {
 </script>
 
 <style>
-.bordered {
+.signature-bordered {
     border: 1px solid #000;
 }
 

@@ -1,13 +1,5 @@
 <template>
 <div>
-    <nav class="navbar py-3 is-black">
-        <div class="container">
-            <div class="navbar-brand">
-                <img src="../img/brand.png" height="58">
-            </div>
-        </div>
-    </nav>
-
     <div class="container py-3">
         <div class="columns is-centered">
             <div v-show="img" class="column is-half">
@@ -31,7 +23,8 @@
             <div class="column is-half has-text-centered">
 
                 <span v-show="img">
-                    <button class="button" @click="reset">Take another!</button>
+                    <button class="button is-primary" @click="showIntakeForm">Share with PyCascades</button>
+                    <button class="button is-danger" @click="reset">Snap Another</button>
                 </span>
 
                 <span v-show="!img">
@@ -54,6 +47,8 @@
 
     </div>
 
+    <intake-form v-show="intakeFormVisible" :img="img" @close="hideIntakeForm" />
+
 </div>
 </template>
 
@@ -75,6 +70,7 @@ export default {
             deviceId: null,
             devices: [],
             deviceMap: {},
+            intakeFormVisible: false,
         };
     },
     computed: {
@@ -98,6 +94,12 @@ export default {
     methods: {
         reset() {
             this.img = null
+        },
+        showIntakeForm() {
+            this.intakeFormVisible = true
+        },
+        hideIntakeForm() {
+            this.intakeFormVisible = false
         },
         onCapture() {
             let self = this
@@ -150,7 +152,6 @@ export default {
                 devices.forEach((device) => {
                     self.deviceMap[device.deviceId] = device.label
                 })
-                console.log(devices, self.deviceMap)
             })
         },
         onCameraChange(deviceId) {
@@ -165,11 +166,4 @@ export default {
 </script>
 
 <style>
-html, body {
-    height: 100%;
-}
-body {
-    background: rgb(7,1,15);
-    background: linear-gradient(333deg, rgba(7,1,15,1) 0%, rgba(97,60,151,1) 100%); 
-}
 </style>

@@ -62,7 +62,7 @@
 
     </div>
 
-    <intake-form v-show="intakeFormVisible" :img="img" @close="hideIntakeForm" />
+    <intake-form v-show="intakeFormVisible" :img="img" @close="hideIntakeForm" @resetBooth="reset" />
 
 </div>
 </template>
@@ -111,6 +111,7 @@ export default {
     methods: {
         reset() {
             this.img = null
+            this.hideIntakeForm()
         },
         showIntakeForm() {
             this.intakeFormVisible = true

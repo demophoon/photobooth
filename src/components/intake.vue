@@ -3,8 +3,8 @@
     <div class="modal-background" @click="$emit('close')"></div>
 
     <div class="modal-content">
-        <div>
-            <div class="columns is-centered ">
+        <div v-show="!showThankYou">
+            <div class="columns is-centered">
                 <div class="column is-full">
                     <div class="box has-text-dark">
 
@@ -96,7 +96,7 @@
                             </div>
 
                             <div class="control">
-                                <button class="button is-primary" @click="upload">Submit</button>
+                                <button class="button is-info" @click="upload">Submit</button>
                             </div>
 
                         </div>
@@ -107,6 +107,33 @@
             </div>
         </div>
 
+        <div v-show="showThankYou">
+            <div class="columns is-centered">
+                <div class="column is-full">
+                    <div class="box has-text-dark">
+
+                        <div class="content">
+                            <p>
+                                <h1>Thank you!</h1>
+                            </p>
+                            <p>
+                                Thanks for sharing your photo with PyCascades for the collage!
+                            </p>
+                            <p>
+                                Note that the form will be prefilled as long as you do not refresh the page in case you would like to share another photo with us.
+                            </p>
+                            <p>
+                                Don't forget to stay in touch by following us on Twitter <a href="https://twitter.com/pycascades">@pycascades</a> or by visiting <a href="https://2022.pycascades.com/">https://2022.pycascades.com/</a>.
+                            </p>
+
+                            <p>
+                                <button class='button is-info' @click="resetBooth">Take Another Photo</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <button class="modal-close is-large" @click="$emit('close')" aria-label="close"></button>
@@ -122,6 +149,7 @@ export default {
             questions: "",
             signed: false,
             submitAttempted: false,
+            showThankYou: false,
         }
     },
     mounted() {
@@ -135,13 +163,25 @@ export default {
         });
     },
     props: ["img"],
+    watch: {
+        img() {
+            if (this.img == null) {
+                this.showThankYou = false
+            }
+        }
+    },
     methods: {
+        resetBooth() {
+            this.showThankYou = false
+            this.$emit('resetBooth')
+        },
         resetSignature() {
             this.$refs.signature.clear()
             this.signed = false
         },
         isValidSignature() {
-            return !this.$refs.signature.isEmpty()
+            this.signed = !this.$refs.signature.isEmpty()
+            return this.signed
         },
         validateEmail(field) {
             return this.validateCompleted(field) && field.includes("@") && field.includes(".") && !field.endsWith(".")
@@ -150,7 +190,7 @@ export default {
             return field != ""
         },
         validateForm() {
-            return !(this.fullName == "" || this.email == "" || !this.isValidSignature())
+            return !(!this.validateCompleted(this.fullName) || !this.validateEmail(this.email) || !this.isValidSignature())
         },
         upload() {
             let self = this;
@@ -169,7 +209,7 @@ export default {
                 method: "POST",
                 body: fd,
             }).then((d) => {
-                self.$emit('close')
+                this.showThankYou = true
             })
         },
         dataURLtoBlob(dataurl) {
